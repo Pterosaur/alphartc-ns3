@@ -8,7 +8,7 @@ Simulation for webrtc cc algorithm on ns-3.32
 
 ```sh
 export WORK_DIR=$(pwd)
-export GYM=$WORK_DIR/gym
+export GYM_DIR=$WORK_DIR/gym
 git clone https://github.com/Pterosaur/alphartc-ns3.git gym
 ```
 
@@ -25,58 +25,38 @@ export NS_DIR=$(pwd)
 #### get AlphaRTC code
 
 ```sh
-cd $GYM
+cd $GYM_DIR
 git submodule init
 git submodule update
 cd AlphaRTC
 export ALPHARTC_DIR=$(pwd)
 ```
 
-#### Replace some source files from this repo 
-
-```sh
-cd $GYM
-cp -rf src/* $ALPHARTC_DIR/
-cp -rf ex-webrtc/test $ALPHARTC_DIR
-cp -rf ex-webrtc $NS_DIR/src/
-```
-
 #### Compile libwebrtc.a 
 
 ```sh
 cd $ALPHARTC_DIR
-make sync host_workdir=$GYM docker_homedir=/app docker_workdir=/app/AlphaRTC
+make sync host_workdir=$GYM_DIR docker_homedir=/app docker_workdir=/app/AlphaRTC
 make lib
 ```
 
-then we'll get `$ALPHARTC_DIR/out/m84/obj/libwebrtc.a`
+then we'll get `$ALPHARTC_DIR/out/Default/obj/libwebrtc.a`
 
-<!--
-
-#### Set the default c++ version in `$NS_DIR/wscript` or you can directly replace it with `global-script` in this repo.
+#### Add AlphaRTC and Gym to NS3
 
 ```sh
-cd $NS_DIR
-vi wscript
+cd $GYM_DIR
+cp -rf ex-webrtc $NS_DIR/src/
+cp -r $ALPHARTC_DIR/test $NS_DIR/src/ex-webrtc
+cp -r $ALPHARTC_DIR/api $NS_DIR/src/ex-webrtc
+cp -r $ALPHARTC_DIR/modules $NS_DIR/src/ex-webrtc
+cp -r $ALPHARTC_DIR/rtc_base $NS_DIR/src/ex-webrtc
 ```
-
-```python
-# Enable C++-11 support
-env.append_value('CXXFLAGS', '-std=c++11')
-   
-# Enable C++-14 support
-# Change to 
-env.append_value('CXXFLAGS', '-std=c++14')
-```
-
--->
 
 #### Build ns project
 
 ```sh
 cd $NS_DIR
-export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:$ALPHARTC_DIR:$ALPHARTC_DIR/third_party/abseil-cpp
-# CXXFLAGS="-Wno-error" ./waf configure --enable-static
 ./waf configure --enable-static --cxx-standard=c++14
 ./waf build
 ```
@@ -84,7 +64,7 @@ export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:$ALPHARTC_DIR:$ALPHARTC_DIR/third_
 #### Copy the webrtc sratch script `scratch/webrtc_test/*` to `ns-3.26/scratch/`, 
 
 ```sh
-cd $GYM
+cd $GYM_DIR
 cp -r scratch $NS_DIR
 ```
 

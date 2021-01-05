@@ -118,7 +118,6 @@ class Call {
 
   virtual ~Call() {}
 
-  virtual uint32_t last_bandwidth_bps() { return 0; };
 };
 
 }  // namespace webrtc
