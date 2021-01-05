@@ -1,6 +1,6 @@
-# webrtc-gcc-ns3
+# Alphartc-gcc-ns3
 
-Simulation for webrtc cc algorithm on ns-3.32
+Simulation for Alphartc cc algorithm on ns-3.32
 
 ### Setup Guide
 
