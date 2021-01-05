@@ -46,7 +46,7 @@ then we'll get `$ALPHARTC_DIR/out/Default/obj/libwebrtc.a`
 
 ```sh
 cd $GYM_DIR
-cp -rf ex-webrtc $NS_DIR/src/
+cp -r $GYM_DIR/ns-3.32/* $NS_DIR/
 cp -r $ALPHARTC_DIR/test $NS_DIR/src/ex-webrtc
 cp -r $ALPHARTC_DIR/api $NS_DIR/src/ex-webrtc
 cp -r $ALPHARTC_DIR/modules $NS_DIR/src/ex-webrtc
@@ -59,13 +59,6 @@ cp -r $ALPHARTC_DIR/rtc_base $NS_DIR/src/ex-webrtc
 cd $NS_DIR
 ./waf configure --enable-static --cxx-standard=c++14
 ./waf build
-```
-
-#### Copy the webrtc sratch script `scratch/webrtc_test/*` to `ns-3.26/scratch/`, 
-
-```sh
-cd $GYM_DIR
-cp -r scratch $NS_DIR
 ```
 
 #### Then you can run the script:
