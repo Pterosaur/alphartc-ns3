@@ -23,6 +23,48 @@ const uint32_t TOPO_DEFAULT_BW     = 3000000;
 const uint32_t TOPO_DEFAULT_PDELAY =100;
 const uint32_t TOPO_DEFAULT_QDELAY =300;
 const uint32_t DEFAULT_PACKET_SIZE = 1000;
+const static uint32_t rateArray[]= { 3000000 };
+
+class ChangeBw
+{
+public:
+  ChangeBw (Ptr<NetDevice> netdevice)
+  {
+    m_total = sizeof (rateArray) / sizeof (rateArray[0]);
+    m_netdevice = netdevice;
+  }
+  //ChangeBw(){}
+  ~ChangeBw ()
+  {
+  }
+  void
+  Start ()
+  {
+    Time next = Seconds (m_gap);
+    m_timer = Simulator::Schedule (next, &ChangeBw::ChangeRate, this);
+  }
+  void
+  ChangeRate ()
+  {
+    if (m_timer.IsExpired ())
+      {
+        NS_LOG_INFO (Simulator::Now ().GetSeconds () << " " << rateArray[m_index] / 1000);
+        PointToPointNetDevice *device =
+            static_cast<PointToPointNetDevice *> (PeekPointer (m_netdevice));
+        device->SetDataRate (DataRate (rateArray[m_index]));
+        m_index = (m_index + 1) % m_total;
+        Time next = Seconds (m_gap);
+        m_timer = Simulator::Schedule (next, &ChangeBw::ChangeRate, this);
+      }
+  }
+
+private:
+  uint32_t m_index{1};
+  uint32_t m_gap{2}; //change the link banwidth every 20s
+  uint32_t m_total{0};
+  Ptr<NetDevice> m_netdevice;
+  EventId m_timer;
+};
 
 static NodeContainer BuildExampleTopo (uint64_t bps,
                                        uint32_t msDelay,
@@ -196,6 +238,9 @@ int main(int argc, char *argv[]){
     recvPort++;
     test_pair++;
     
+    Ptr<NetDevice> netDevice=nodes.Get(1)->GetDevice(0);
+    ChangeBw change(netDevice);
+    change.Start();
     Simulator::Stop (Seconds(simDuration));
     Simulator::Run ();
     Simulator::Destroy();
