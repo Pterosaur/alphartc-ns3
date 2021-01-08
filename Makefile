@@ -58,7 +58,7 @@ init:
 
 sync:
 	make -C $(alphartc_dir) init
-	make -C $(alphartc_dir) sync host_workdir=$GYM_DIR docker_homedir=/app docker_workdir=/app/AlphaRTC
+	make -C $(alphartc_dir) sync host_workdir=$(work_dir) docker_homedir=/app docker_workdir=/app/AlphaRTC
 	make -C $(alphartc_dir) lib
 
 gym:
