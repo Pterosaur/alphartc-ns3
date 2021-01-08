@@ -33,7 +33,7 @@ docker_ex_webrtc_modules_dir := $(docker_ex_webrtc_dir)/modules
 docker_ex_webrtc_rtc_base_dir := $(docker_ex_webrtc_dir)/rtc_base
 docker_target_dir := $(docker_ns_dir)/target
 
-docker_flags := --rm -ti \
+docker_flags := --rm \
 				-v $(alphartc_dir):$(docker_alphartc_dir) \
 				-v $(scratch_webrtc_dir):$(docker_ns_scratch_webrtc_dir) \
 				-v $(ex_webrtc_model_dir):$(docker_ex_webrtc_model_dir) \

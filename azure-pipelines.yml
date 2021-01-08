@@ -17,16 +17,16 @@ steps:
 - checkout: self
 
 - script: make init
-  displayName: 'build compile environment'
+  displayName: 'Build environment'
 
 - script: make sync
-  displayName: 'sync dependencies'
+  displayName: 'Sync dependencies'
 
 - script: make gym
-  displayName: 'build gym'
+  displayName: 'Build gym'
 
 - script: mkdir -p traces && target/webrtc_test
-  displayName: 'execute gym'
+  displayName: 'Execute gym'
 
 - publish: $(System.DefaultWorkingDirectory)/target
   artifact: alphartc-gym
