@@ -27,3 +27,7 @@ steps:
 
 - script: mkdir -p traces && target/webrtc_test
   displayName: 'execute gym'
+
+- publish: $(System.DefaultWorkingDirectory)/target
+  artifact: alphartc-gym
+  displayName: "Archive alphartc gym"
