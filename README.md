@@ -18,10 +18,10 @@ If you want to build the debug version, try `make gym build_profile=debug`
 
 #### Execute Gym
 
-```shell
+```sh
 # Execute following commands under gym/target
 mkdir -p traces
-./webrtc_test
+target/webrtc_test
 ```
 
 #### Customized estimator

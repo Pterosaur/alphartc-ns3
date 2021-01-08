@@ -24,3 +24,6 @@ steps:
 
 - script: make gym
   displayName: 'build gym'
+
+- script: mkdir -p traces && target/webrtc_test
+  displayName: 'execute gym'
