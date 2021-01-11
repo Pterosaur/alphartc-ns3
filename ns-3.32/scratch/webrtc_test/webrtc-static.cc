@@ -25,6 +25,8 @@ const uint32_t TOPO_DEFAULT_QDELAY =300;
 const uint32_t DEFAULT_PACKET_SIZE = 1000;
 const static uint32_t RATE_ARRAY[]= { 3000000 };
 
+// This class changes the rate of the bandwidth in a Round-Robin fashion
+// I.e., at second t, the rate will be adjusted to RATE_ARRAY[((t/m_gap)-1)%m_total]
 class ChangeBw
 {
 public:
@@ -33,7 +35,6 @@ public:
     m_total = sizeof (RATE_ARRAY) / sizeof (RATE_ARRAY[0]);
     m_netdevice = netdevice;
   }
-  //ChangeBw(){}
   ~ChangeBw ()
   {
   }
@@ -59,8 +60,8 @@ public:
   }
 
 private:
-  uint32_t m_index{1};
-  uint32_t m_gap{2}; //change the link banwidth every 20s
+  uint32_t m_index{0};
+  uint32_t m_gap{2}; //change the link banwidth every 2s
   uint32_t m_total{0};
   Ptr<NetDevice> m_netdevice;
   EventId m_timer;
