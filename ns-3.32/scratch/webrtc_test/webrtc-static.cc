@@ -130,7 +130,6 @@ int main(int argc, char *argv[]){
     uint16_t recvPort=5000;
 
     std::unique_ptr<WebrtcSessionManager> webrtc_manaager(new WebrtcSessionManager(std::make_unique<webrtc::MyNetworkStateEstimatorFactory>()));
-    // std::unique_ptr<WebrtcSessionManager> webrtc_manaager(new WebrtcSessionManager());
     uint32_t min_rate=300;
     uint32_t start_rate=500;
     uint32_t max_rate=linkBw/1000;
