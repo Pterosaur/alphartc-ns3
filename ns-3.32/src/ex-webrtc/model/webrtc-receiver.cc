@@ -95,7 +95,6 @@ void WebrtcReceiver::StartApplication() {
 void WebrtcReceiver::StopApplication() {
     NS_LOG_INFO("Recv App Stopped");
     m_running = false;
-    m_manager->Stop();
 }
 
 void WebrtcReceiver::NotifyRouteChange() {

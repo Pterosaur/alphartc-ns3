@@ -129,23 +129,23 @@ int main(int argc, char *argv[]){
     uint16_t sendPort=5432;
     uint16_t recvPort=5000;
 
-    std::unique_ptr<WebrtcSessionManager> webrtc_manaager(new WebrtcSessionManager(std::make_unique<webrtc::MyNetworkStateEstimatorFactory>()));
+    std::unique_ptr<WebrtcSessionManager> webrtc_manager(new WebrtcSessionManager(std::make_unique<webrtc::MyNetworkStateEstimatorFactory>()));
     uint32_t min_rate=300;
     uint32_t start_rate=500;
     uint32_t max_rate=linkBw/1000;
-    webrtc_manaager->SetFrameHxW(720,1280);
-    webrtc_manaager->SetRate(min_rate,start_rate,max_rate);
-    webrtc_manaager->CreateClients();
+    webrtc_manager->SetFrameHxW(720,1280);
+    webrtc_manager->SetRate(min_rate,start_rate,max_rate);
+    webrtc_manager->CreateClients();
 
-    std::unique_ptr<WebrtcSessionManager> webrtc_manaager2(new WebrtcSessionManager());
-    std::unique_ptr<WebrtcSessionManager> webrtc_manaager3(new WebrtcSessionManager());
-    webrtc_manaager2->SetFrameHxW(720,1280);
-    webrtc_manaager2->SetRate(min_rate,start_rate,max_rate);
-    webrtc_manaager2->CreateClients();
+    std::unique_ptr<WebrtcSessionManager> webrtc_manager2(new WebrtcSessionManager());
+    std::unique_ptr<WebrtcSessionManager> webrtc_manager3(new WebrtcSessionManager());
+    webrtc_manager2->SetFrameHxW(720,1280);
+    webrtc_manager2->SetRate(min_rate,start_rate,max_rate);
+    webrtc_manager2->CreateClients();
 
-    webrtc_manaager3->SetFrameHxW(720,1280);
-    webrtc_manaager3->SetRate(min_rate,start_rate,max_rate);
-    webrtc_manaager3->CreateClients();
+    webrtc_manager3->SetFrameHxW(720,1280);
+    webrtc_manager3->SetRate(min_rate,start_rate,max_rate);
+    webrtc_manager3->CreateClients();
 
     NodeContainer nodes = BuildExampleTopo(linkBw, msDelay, msQDelay,enable_random_loss);
 
@@ -159,7 +159,7 @@ int main(int argc, char *argv[]){
                             recvPort,
                             appStart,
                             appStop,
-                            webrtc_manaager.get(),
+                            webrtc_manager.get(),
                             &trace1);
     sendPort++;
     recvPort++;
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]){
                             recvPort,
                             appStart+20,
                             appStop,
-                            webrtc_manaager2.get(),
+                            webrtc_manager2.get(),
                             &trace2);
     sendPort++;
     recvPort++;
@@ -189,7 +189,7 @@ int main(int argc, char *argv[]){
                             recvPort,
                             appStart+40,
                             appStop,
-                            webrtc_manaager3.get(),
+                            webrtc_manager3.get(),
                             &trace3);
     sendPort++;
     recvPort++;
