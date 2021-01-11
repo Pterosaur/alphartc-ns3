@@ -27,6 +27,7 @@ const static uint32_t RATE_ARRAY[]= { 3000000 };
 
 // This class changes the rate of the bandwidth in a Round-Robin fashion
 // I.e., at second t, the rate will be adjusted to RATE_ARRAY[((t/m_gap)-1)%m_total]
+// Inspired and ported from https://blog.csdn.net/u010643777/article/details/80590045
 class ChangeBw
 {
 public:
