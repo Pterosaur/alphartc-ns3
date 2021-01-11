@@ -25,7 +25,7 @@ public:
 
  private:
   const std::unique_ptr<TaskQueueFactory> task_queue_factory_;
-  const std::unique_ptr<rtc::Thread> main_thread_;    
+  const std::unique_ptr<rtc::Thread> main_thread_;
 };
 }
 
