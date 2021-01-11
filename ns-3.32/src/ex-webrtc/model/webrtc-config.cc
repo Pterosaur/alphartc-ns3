@@ -36,20 +36,20 @@ WebrtcSessionManager::~WebrtcSessionManager() {
     webrtc::NetworkControllerFactoryInterface *cc_factory = call_client_config_.transport.cc_factory;
     if (cc_factory) {
         call_client_config_.transport.cc_factory = nullptr;
-        // delete cc_factory;
+        delete cc_factory;
     }
     if (m_running) {
         Stop();
     }
+    video_streams_.clear();
     if (sender_client_) {
-        // delete sender_client_;
+        delete sender_client_;
         sender_client_ = nullptr;
     }
     if (receiver_client_) {
-        // delete receiver_client_;
+        delete receiver_client_;
         receiver_client_ = nullptr;
     }
-    video_streams_.clear();
 }
 
 void WebrtcSessionManager::CreateClients() {
