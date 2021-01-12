@@ -12,7 +12,7 @@
 #include "ns3/log.h"
 #include "ns3/ex-webrtc-module.h"
 
-#include "my_network_estimator.h"
+#include "network_estimator_proxy.h"
 
 using namespace ns3;
 using namespace std;
@@ -178,7 +178,7 @@ int main(int argc, char *argv[]){
     uint32_t start_rate=500;
     uint32_t max_rate=linkBw/1000;
 
-    std::unique_ptr<WebrtcSessionManager> webrtc_manager(new WebrtcSessionManager(std::make_unique<webrtc::MyNetworkStateEstimatorFactory>()));
+    std::unique_ptr<WebrtcSessionManager> webrtc_manager(new WebrtcSessionManager(std::make_unique<webrtc::NetworkStateEstimatorProxyFactory>()));
     webrtc_manager->SetFrameHxW(720,1280);
     webrtc_manager->SetRate(min_rate,start_rate,max_rate);
     webrtc_manager->CreateClients();
