@@ -174,11 +174,11 @@ int main(int argc, char *argv[]){
     uint16_t sendPort=5432;
     uint16_t recvPort=5000;
 
-    uint32_t min_rate=300;
+    uint32_t min_rate=0;
     uint32_t start_rate=500;
     uint32_t max_rate=linkBw/1000;
 
-    std::unique_ptr<WebrtcSessionManager> webrtc_manager(new WebrtcSessionManager(std::make_unique<webrtc::NetworkStateEstimatorProxyFactory>()));
+    std::unique_ptr<WebrtcSessionManager> webrtc_manager(new WebrtcSessionManager(std::make_unique<NetworkStateEstimatorProxyFactory>()));
     webrtc_manager->SetFrameHxW(720,1280);
     webrtc_manager->SetRate(min_rate,start_rate,max_rate);
     webrtc_manager->CreateClients();

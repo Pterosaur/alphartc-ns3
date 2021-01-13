@@ -2,17 +2,21 @@
 
 #include <iostream>
 
-namespace webrtc {
+using namespace webrtc;
 
-constexpr static BandwidthRate rate_bps = 1000000; // 1Mbps
+// This variable has been hardcode in Google Congestion Control of WebRTC
+constexpr static DataRate MIN_DATA_RATE = DataRate::KilobitsPerSec(30);
 
-NetworkStateEstimatorProxy::NetworkStateEstimatorProxy(BandwidthRate data_rate) {
-  estimate_.link_capacity = DataRate::BitsPerSec(data_rate);
-  estimate_.link_capacity_lower = DataRate::BitsPerSec(data_rate);
-  estimate_.link_capacity_upper = DataRate::BitsPerSec(data_rate);
+constexpr static DataRate DATA_RATE = DataRate::KilobitsPerSec(1000); // 1Mbps
+
+NetworkStateEstimatorProxy::NetworkStateEstimatorProxy(DataRate data_rate) {
+  estimate_.link_capacity = data_rate;
+  estimate_.link_capacity_lower = data_rate;
+  estimate_.link_capacity_upper = data_rate;
 }
 
 absl::optional<NetworkStateEstimate> NetworkStateEstimatorProxy::GetCurrentEstimate() {
+  std::cout << reinterpret_cast<std::uint64_t>(this) << " Estimate " << estimate_.link_capacity.bps() << std::endl;
   return estimate_;
 }
 
@@ -28,7 +32,5 @@ void NetworkStateEstimatorProxy::OnRouteChange(const NetworkRouteChange& route_c
 
 std::unique_ptr<NetworkStateEstimator> NetworkStateEstimatorProxyFactory::Create(
       const WebRtcKeyValueConfig* key_value_config) {
-  return std::make_unique<NetworkStateEstimatorProxy>(rate_bps);
+  return std::make_unique<NetworkStateEstimatorProxy>(DATA_RATE);
 }
-
-}  // namespace webrtc
