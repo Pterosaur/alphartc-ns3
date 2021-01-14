@@ -116,7 +116,7 @@ static void InstallWebrtcApplication( Ptr<Node> sender,
 {
     Ptr<WebrtcSender> sendApp = CreateObject<WebrtcSender> (manager);
     Ptr<WebrtcReceiver> recvApp = CreateObject<WebrtcReceiver>(manager);
-       sender->AddApplication (sendApp);
+    sender->AddApplication (sendApp);
     receiver->AddApplication (recvApp);
     sendApp->Bind(send_port);
     recvApp->Bind(recv_port);

@@ -16,7 +16,6 @@ NetworkStateEstimatorProxy::NetworkStateEstimatorProxy(DataRate data_rate) {
 }
 
 absl::optional<NetworkStateEstimate> NetworkStateEstimatorProxy::GetCurrentEstimate() {
-  std::cout << reinterpret_cast<std::uint64_t>(this) << " Estimate " << estimate_.link_capacity.bps() << std::endl;
   return estimate_;
 }
 

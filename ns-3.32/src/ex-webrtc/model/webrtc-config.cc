@@ -1,15 +1,18 @@
 #include "webrtc-config.h"
+#include "webrtc-util.h"
+#include "network_controller_proxy_factory.h"
+
+#include "test/scenario/scenario_config.h"
+#include "test/scenario/video_frame_matcher.h"
+#include "api/transport/network_control.h"
+#include "api/transport/network_types.h"
+
 #include <stdio.h>
 #include <stdio.h>
 #include <signal.h>
 #include <memory>
 #include <unistd.h>
 #include <iostream>
-#include "webrtc-util.h"
-#include "test/scenario/scenario_config.h"
-#include "test/scenario/video_frame_matcher.h"
-#include "api/transport/network_control.h"
-#include "api/transport/network_types.h"
 
 namespace ns3{
 
@@ -28,7 +31,8 @@ WebrtcSessionManager::WebrtcSessionManager(
     webrtc::GoogCcFactoryConfig config;
     config.feedback_only = true;
     config.network_state_estimator_factory = std::move(network_state_estimator_factory);
-    call_client_config_.transport.cc_factory = new webrtc::GoogCcNetworkControllerFactory(std::move(config));
+    // call_client_config_.transport.cc_factory = new webrtc::GoogCcNetworkControllerFactory(std::move(config));
+    call_client_config_.transport.cc_factory = new NetworkControllerProxyFactory();
     time_controller_.reset(new webrtc::MyRealTimeController());
 }
 
