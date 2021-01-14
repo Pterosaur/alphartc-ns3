@@ -7,10 +7,12 @@
 #define PRINT_ENTRY
 // #define PRINT_ENTRY std::cout<<__func__<<std::endl;
 
+constexpr double pacing_factor_ = 2.5f;
+
 class NetworkControllerProxy : public webrtc::NetworkControllerInterface
 {
 public:
-  NetworkControllerProxy() : target_data_(webrtc::DataRate::KilobitsPerSec(1)) {
+  NetworkControllerProxy() : target_data_(webrtc::DataRate::KilobitsPerSec(100)) {
   }
 
   // Called when network availabilty changes.
@@ -101,7 +103,7 @@ private:
     update.pacer_config = webrtc::PacerConfig();
     update.pacer_config->at_time = at_time;
     update.pacer_config->time_window = webrtc::TimeDelta::Seconds(1);
-    update.pacer_config->data_window = target_data_ * update.pacer_config->time_window;
+    update.pacer_config->data_window =  pacing_factor_ * target_data_ * update.pacer_config->time_window;
     update.pacer_config->pad_window = webrtc::DataRate::BitsPerSec(0) * update.pacer_config->time_window;
 
     return update;

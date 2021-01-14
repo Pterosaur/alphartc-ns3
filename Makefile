@@ -63,7 +63,7 @@ sync:
 
 gym:
 	mkdir -p $(target_dir)
-	docker run -ti $(docker_flags) $(compile_docker) \
+	docker run $(docker_flags) $(compile_docker) \
 		bash -c \
 		" $(docker_ns_dir)/waf configure --enable-static \
 		--check-cxx-compiler=clang++ --check-c-compiler=clang \

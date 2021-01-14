@@ -205,6 +205,10 @@ int main(int argc, char *argv[]){
     ChangeBw change(netDevice);
     change.Start();
 
+    Ptr<NetDevice> netDevice2=nodes.Get(0)->GetDevice(0);
+    ChangeBw change2(netDevice2);
+    change2.Start();
+
     Simulator::Stop (Seconds(simDuration));
     Simulator::Run ();
     Simulator::Destroy();
