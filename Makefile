@@ -1,4 +1,3 @@
-# ns_version := ns-3.32
 build_profile := release
 
 dockers_dir := dockers
