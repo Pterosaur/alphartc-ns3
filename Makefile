@@ -1,4 +1,4 @@
-ns_version := ns-3.32
+# ns_version := ns-3.32
 build_profile := release
 
 dockers_dir := dockers
@@ -7,9 +7,10 @@ build_dockerfile := $(dockers_dir)/Dockerfile.compile
 compile_docker := gym-compile
 
 work_dir := `pwd`
-ns_dir := $(work_dir)/$(ns_version)
-scratch_webrtc_dir := $(ns_dir)/scratch/webrtc_test
-ex_webrtc_dir := $(ns_dir)/src/ex-webrtc
+ns_dir := $(work_dir)/ns-3-dev
+ns_app := $(work_dir)/ns-app
+scratch_webrtc_dir := $(ns_app)/scratch/webrtc_test
+ex_webrtc_dir := $(ns_app)/src/ex-webrtc
 ex_webrtc_model_dir := $(ex_webrtc_dir)/model
 ex_webrtc_wscript_path := $(ex_webrtc_dir)/wscript
 alphartc_dir := $(work_dir)/AlphaRTC
@@ -22,7 +23,7 @@ target_dir := $(work_dir)/target
 docker_user := onl
 docker_work_dir := /home/$(docker_user)
 docker_alphartc_dir := $(docker_work_dir)/alphartc
-docker_ns_dir := $(docker_work_dir)/ns_allinone/$(ns_version)
+docker_ns_dir := $(docker_work_dir)/ns
 docker_ns_scratch_webrtc_dir := $(docker_ns_dir)/scratch/webrtc_test
 docker_ex_webrtc_dir := $(docker_ns_dir)/src/ex-webrtc
 docker_ex_webrtc_model_dir := $(docker_ex_webrtc_dir)/model
@@ -34,6 +35,7 @@ docker_ex_webrtc_rtc_base_dir := $(docker_ex_webrtc_dir)/rtc_base
 docker_target_dir := $(docker_ns_dir)/target
 
 docker_flags := --rm \
+				-v $(ns_dir):$(docker_ns_dir) \
 				-v $(alphartc_dir):$(docker_alphartc_dir) \
 				-v $(scratch_webrtc_dir):$(docker_ns_scratch_webrtc_dir) \
 				-v $(ex_webrtc_model_dir):$(docker_ex_webrtc_model_dir) \
@@ -61,13 +63,20 @@ sync:
 	make -C $(alphartc_dir) sync host_workdir=$(work_dir) docker_homedir=/app docker_workdir=/app/AlphaRTC
 	make -C $(alphartc_dir) lib
 
+configure:
+	docker run $(docker_flags) $(compile_docker) \
+		bash -c \
+		" \
+		$(docker_ns_dir)/waf configure --enable-static \
+		--check-cxx-compiler=clang++ --check-c-compiler=clang \
+		--build-profile=$(build_profile); \
+		"
+
 gym:
 	mkdir -p $(target_dir)
 	docker run $(docker_flags) $(compile_docker) \
 		bash -c \
-		" $(docker_ns_dir)/waf configure --enable-static \
-		--check-cxx-compiler=clang++ --check-c-compiler=clang \
-		--build-profile=$(build_profile); \
+		" \
 		$(docker_ns_dir)/waf build; \
 		cp $(docker_ns_dir)/build/scratch/webrtc_test/webrtc_test $(docker_target_dir)/ \
 		"
