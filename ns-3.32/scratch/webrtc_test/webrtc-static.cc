@@ -1,6 +1,11 @@
+#include "network_estimator_proxy.h"
+#include "network_controller_proxy_factory.h"
+#include "gym_connector.h"
+
 #include <iostream>
 #include <string>
 #include <deque>
+
 #include "ns3/webrtc-defines.h"
 #include "ns3/core-module.h"
 #include "ns3/applications-module.h"
@@ -11,9 +16,6 @@
 #include "ns3/traffic-control-module.h"
 #include "ns3/log.h"
 #include "ns3/ex-webrtc-module.h"
-
-#include "network_estimator_proxy.h"
-#include "network_controller_proxy_factory.h"
 
 using namespace ns3;
 using namespace std;
@@ -179,7 +181,9 @@ int main(int argc, char *argv[]){
     uint32_t start_rate=500;
     uint32_t max_rate=linkBw/1000;
 
-    auto cc_factory = std::make_shared<NetworkControllerProxyFactory>();
+    GymConnector conn;
+    conn.SetBandwidth(10000000);
+    auto cc_factory = std::make_shared<NetworkControllerProxyFactory>(conn);
     auto webrtc_manager = std::make_unique<WebrtcSessionManager>(cc_factory);
     webrtc_manager->SetFrameHxW(720,1280);
     webrtc_manager->SetRate(min_rate,start_rate,max_rate);
