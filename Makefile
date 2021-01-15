@@ -43,7 +43,6 @@ docker_flags := --rm \
 				-v $(alphartc_api_dir):$(docker_ex_webrtc_api_dir) \
 				-v $(alphartc_modules_dir):$(docker_ex_webrtc_modules_dir) \
 				-v $(alphartc_rtc_base_dir):$(docker_ex_webrtc_rtc_base_dir) \
-				-v $(target_dir):$(docker_target_dir) \
 				-w $(docker_ns_dir) \
 				-e ALPHARTC_DIR=$(docker_alphartc_dir)
 
@@ -73,7 +72,9 @@ configure:
 
 gym:
 	mkdir -p $(target_dir)
-	docker run $(docker_flags) $(compile_docker) \
+	docker run $(docker_flags) \
+		-v $(target_dir):$(docker_target_dir) \
+		$(compile_docker) \
 		bash -c \
 		" \
 		$(docker_ns_dir)/waf build; \
