@@ -1,6 +1,5 @@
 #include "webrtc-config.h"
 #include "webrtc-util.h"
-#include "network_controller_proxy_factory.h"
 
 #include "test/scenario/scenario_config.h"
 #include "test/scenario/video_frame_matcher.h"
@@ -23,25 +22,16 @@ const float kDefaultPacingRate = 2.5f;
 }
 
 WebrtcSessionManager::WebrtcSessionManager(
-    std::unique_ptr<webrtc::NetworkStateEstimatorFactory> network_state_estimator_factory)
+    std::shared_ptr<webrtc::NetworkControllerFactoryInterface> cc_factory)
 {
     call_client_config_.transport.rates.min_rate = kInitialBitrate;
     call_client_config_.transport.rates.max_rate = 5*kInitialBitrate;
     call_client_config_.transport.rates.start_rate = kInitialBitrate;
-    webrtc::GoogCcFactoryConfig config;
-    config.feedback_only = true;
-    config.network_state_estimator_factory = std::move(network_state_estimator_factory);
-    // call_client_config_.transport.cc_factory = new webrtc::GoogCcNetworkControllerFactory(std::move(config));
-    call_client_config_.transport.cc_factory = new NetworkControllerProxyFactory();
+    call_client_config_.transport.cc_factory = cc_factory.get();
     time_controller_.reset(new webrtc::MyRealTimeController());
 }
 
 WebrtcSessionManager::~WebrtcSessionManager() {
-    webrtc::NetworkControllerFactoryInterface *cc_factory = call_client_config_.transport.cc_factory;
-    if (cc_factory) {
-        call_client_config_.transport.cc_factory = nullptr;
-        delete cc_factory;
-    }
     if (m_running) {
         Stop();
     }

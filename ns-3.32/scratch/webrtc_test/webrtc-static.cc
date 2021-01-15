@@ -13,6 +13,7 @@
 #include "ns3/ex-webrtc-module.h"
 
 #include "network_estimator_proxy.h"
+#include "network_controller_proxy_factory.h"
 
 using namespace ns3;
 using namespace std;
@@ -23,7 +24,7 @@ const uint32_t TOPO_DEFAULT_BW     = 3000000;
 const uint32_t TOPO_DEFAULT_PDELAY =100;
 const uint32_t TOPO_DEFAULT_QDELAY =300;
 const uint32_t DEFAULT_PACKET_SIZE = 1000;
-const static uint32_t RATE_ARRAY[]= { 3000000 };
+const static uint32_t RATE_ARRAY[]= { 3000000, 500000, 1500000, 500000, 2000000 };
 
 // This class changes the rate of the bandwidth in a Round-Robin fashion
 // I.e., at second t, the rate will be adjusted to RATE_ARRAY[((t/m_gap)-1)%m_total]
@@ -178,7 +179,8 @@ int main(int argc, char *argv[]){
     uint32_t start_rate=500;
     uint32_t max_rate=linkBw/1000;
 
-    std::unique_ptr<WebrtcSessionManager> webrtc_manager(new WebrtcSessionManager(std::make_unique<NetworkStateEstimatorProxyFactory>()));
+    auto cc_factory = std::make_shared<NetworkControllerProxyFactory>();
+    auto webrtc_manager = std::make_unique<WebrtcSessionManager>(cc_factory);
     webrtc_manager->SetFrameHxW(720,1280);
     webrtc_manager->SetRate(min_rate,start_rate,max_rate);
     webrtc_manager->CreateClients();
