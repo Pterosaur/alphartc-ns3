@@ -28,7 +28,8 @@ class NetworkStateEstimatorProxy : public webrtc::NetworkStateEstimator {
   void OnRouteChange(const webrtc::NetworkRouteChange& route_change) override;
   void OnReceivedPacketDetail(int64_t arrival_time_ms,
                               size_t payload_size,
-                              const webrtc::RTPHeader& header) override;
+                              const webrtc::RTPHeader& header,
+                              const webrtc::PacketResult& packet_result) override;
   ~NetworkStateEstimatorProxy() override {}
 
  private:

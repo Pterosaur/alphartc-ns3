@@ -23,6 +23,7 @@ void NetworkStateEstimatorProxy::OnRouteChange(const NetworkRouteChange& route_c
 void NetworkStateEstimatorProxy::OnReceivedPacketDetail(
   int64_t arrival_time_ms,
   size_t payload_size,
-  const RTPHeader& header) {
-  gym_conn_.ProduceStates(arrival_time_ms, payload_size, header);
+  const RTPHeader& header,
+  const PacketResult& packet_result) {
+  gym_conn_.ProduceStates(arrival_time_ms, payload_size, header, packet_result);
 }

@@ -24,7 +24,8 @@ class GymConnector {
   void ProduceStates(
       int64_t arrival_time_ms,
       size_t payload_size,
-      const webrtc::RTPHeader& header);
+      const webrtc::RTPHeader& header,
+      const webrtc::PacketResult& packet_result);
 
   std::list<std::string> ConsumeStates();
 

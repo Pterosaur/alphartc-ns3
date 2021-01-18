@@ -30,7 +30,7 @@ void GymConnector::SetBandwidth(BandwidthType bandwidth) {
     }
 }
 
-webrtc::NetworkControlUpdate GymConnector::GetNetworkControlUpdate(const webrtc::Timestamp& at_time) const {
+NetworkControlUpdate GymConnector::GetNetworkControlUpdate(const Timestamp& at_time) const {
     BandwidthType current_bandwidth = {0};
 
     {
@@ -45,16 +45,16 @@ webrtc::NetworkControlUpdate GymConnector::GetNetworkControlUpdate(const webrtc:
     update.target_rate->network_estimate.at_time = at_time;
     update.target_rate->network_estimate.bandwidth = target_rate;
     update.target_rate->network_estimate.loss_rate_ratio = 0;
-    update.target_rate->network_estimate.round_trip_time = webrtc::TimeDelta::Millis(0);
-    update.target_rate->network_estimate.bwe_period = webrtc::TimeDelta::Seconds(3);
+    update.target_rate->network_estimate.round_trip_time = TimeDelta::Millis(0);
+    update.target_rate->network_estimate.bwe_period = TimeDelta::Seconds(3);
     update.target_rate->at_time = at_time;
     update.target_rate->target_rate = target_rate;
 
     update.pacer_config = PacerConfig();
     update.pacer_config->at_time = at_time;
-    update.pacer_config->time_window = webrtc::TimeDelta::Seconds(1);
+    update.pacer_config->time_window = TimeDelta::Seconds(1);
     update.pacer_config->data_window =  kPacingFactor * target_rate * update.pacer_config->time_window;
-    update.pacer_config->pad_window = webrtc::DataRate::BitsPerSec(0) * update.pacer_config->time_window;
+    update.pacer_config->pad_window = DataRate::BitsPerSec(0) * update.pacer_config->time_window;
 
     return update;
 }
@@ -62,18 +62,18 @@ webrtc::NetworkControlUpdate GymConnector::GetNetworkControlUpdate(const webrtc:
 void GymConnector::ProduceStates(
     int64_t arrival_time_ms,
     size_t payload_size,
-    const webrtc::RTPHeader& header) {
+    const RTPHeader& header,
+    const PacketResult& packet_result) {
 
     nlohmann::json j;
-    j["arrival_time_ms"] = arrival_time_ms;
-    j["payload_size"] = payload_size;
-    j["send_time_ms"] = header.extension.absoluteSendTime;
-    j["transport_sequence_number"] = header.extension.transportSequenceNumber;
+    j["send_time_ms"] = packet_result.sent_packet.send_time.ms();
+    j["arrival_time_ms"] = packet_result.receive_time.ms();
     j["payload_type"] = header.payloadType;
     j["sequence_number"] = header.sequenceNumber;
     j["ssrc"] = header.ssrc;
     j["padding_length"] = header.paddingLength;
     j["header_length"] = header.headerLength;
+    j["payload_size"] = payload_size;
 
     const std::string stats = j.dump();
     {
