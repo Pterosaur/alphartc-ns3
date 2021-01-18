@@ -25,6 +25,7 @@ WebrtcSessionManager::WebrtcSessionManager(
     std::shared_ptr<webrtc::NetworkControllerFactoryInterface> cc_factory,
     std::shared_ptr<webrtc::NetworkStateEstimatorFactory> se_factory)
 {
+    video_stream_config_.stream.abs_send_time = true;
     call_client_config_.transport.rates.min_rate = kInitialBitrate;
     call_client_config_.transport.rates.max_rate = 5*kInitialBitrate;
     call_client_config_.transport.rates.start_rate = kInitialBitrate;
