@@ -1,3 +1,4 @@
 pyzmq
 pytest
 pytest-timeout
+pytest-repeat

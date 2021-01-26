@@ -19,7 +19,6 @@ class GymProcess(object):
             process_args.append("--report_interval_ms="+str(report_interval_ms))
         if duration_time_ms:
             process_args.append("--duration_time_ms="+str(duration_time_ms))
-        print(" ".join(process_args))
         self.gym = subprocess.Popen(process_args)
 
     def wait(self, timeout = None):
