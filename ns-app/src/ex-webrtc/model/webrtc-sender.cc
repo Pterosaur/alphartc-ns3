@@ -94,17 +94,17 @@ bool WebrtcSender::SendRtp(const uint8_t* packet,
         output = true;
     }
     if (output) {
-        webrtc::Call::Stats stats = m_call->GetStats();
+        // webrtc::Call::Stats stats = m_call->GetStats();
 
-        // It's quite weird that recv_bw_bps is 0.
-        NS_LOG_INFO(stats.ToString(now));
+        // // It's quite weird that recv_bw_bps is 0.
+        // NS_LOG_INFO(stats.ToString(now));
 
-        if (!m_traceBw.IsNull()) {
-            m_traceBw(now, stats.recv_bandwidth_bps);
-        }
-        if (!m_traceRtt.IsNull()) {
-            m_traceRtt(now, stats.rtt_ms);
-        }
+        // if (!m_traceBw.IsNull()) {
+        //     m_traceBw(now, stats.recv_bandwidth_bps);
+        // }
+        // if (!m_traceRtt.IsNull()) {
+        //     m_traceRtt(now, stats.rtt_ms);
+        // }
     }
     if (m_running) {
         Simulator::ScheduleWithContext(m_context, Time (0), MakeEvent(&WebrtcSender::DeliveryPacket, this));

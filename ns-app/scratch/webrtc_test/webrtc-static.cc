@@ -182,7 +182,7 @@ int main(int argc, char *argv[]){
     uint32_t max_rate=linkBw/1000;
 
     GymConnector gym_conn;
-    gym_conn.SetBandwidth(1000000);
+    gym_conn.Step();
     auto cc_factory = std::make_shared<NetworkControllerProxyFactory>(gym_conn);
     auto se_factory = std::make_shared<NetworkStateEstimatorProxyFactory>(gym_conn);
     // webrtc::GoogCcFactoryConfig config;
@@ -223,11 +223,6 @@ int main(int argc, char *argv[]){
     Simulator::Stop (Seconds(simDuration));
     Simulator::Run ();
     Simulator::Destroy();
-
-    auto stats = gym_conn.ConsumeStates();
-    for (auto &s : stats) {
-      std::cout << s << std::endl;
-    }
 
     std::cout<<"Simulation ends."<<std::endl;
     return 0;
