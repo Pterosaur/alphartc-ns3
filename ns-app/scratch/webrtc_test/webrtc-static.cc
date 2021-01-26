@@ -139,25 +139,45 @@ static void InstallWebrtcApplication( Ptr<Node> sender,
     recvApp->SetStopTime (Seconds (stopTime));
 }
 
-static float simDuration    = 30;
-float appStart              = 0.1;
-float appStop = simDuration - 1;
+static std::uint64_t simDuration = 5;
+static float appStart            = 0.1;
+static float appStop             = simDuration - 1;
 
 int main(int argc, char *argv[]){
     LogComponentEnable("WebrtcSender",LOG_LEVEL_ALL);
     LogComponentEnable("WebrtcReceiver",LOG_LEVEL_ALL);
     GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
-    //init_webrtc_log();
-    //set_test_clock_webrtc();
+
     uint64_t linkBw   = TOPO_DEFAULT_BW;
     uint32_t msDelay  = TOPO_DEFAULT_PDELAY;
     uint32_t msQDelay = TOPO_DEFAULT_QDELAY;
-    CommandLine cmd;
+
     std::string instance=std::string("3");
     std::string loss_str("0");
-    cmd.AddValue ("it", "instacne", instance);
-    cmd.AddValue ("lo", "loss",loss_str);
+
+    std::string gym_id("gym");
+    std::string trace_path;
+    std::uint64_t report_interval_ms = 60;
+    std::uint64_t duration_time_ms = 0;
+
+    CommandLine cmd;
+    cmd.AddValue("it", "instacne", instance);
+    cmd.AddValue("lo", "loss",loss_str);
+    cmd.AddValue("gym_id", "gym id should be unique in global system, the default is gym", gym_id);
+    cmd.AddValue("trace_path", "trace file path", trace_path);
+    cmd.AddValue("report_interval_ms", "report interval (ms)", report_interval_ms);
+    cmd.AddValue("duration_time_ms", "duration time (ms), the default is trace log duration", duration_time_ms);
     cmd.Parse (argc, argv);
+
+    if (trace_path.empty() && duration_time_ms == 0) {
+      simDuration = 5;
+    } else if (duration_time_ms == 0) {
+      // Set trace
+    } else {
+      simDuration = duration_time_ms;
+    }
+
+
     int loss_integer=std::stoi(loss_str);
     double loss_rate=loss_integer*1.0/1000;
     std::string webrtc_log_com;
@@ -181,7 +201,7 @@ int main(int argc, char *argv[]){
     uint32_t start_rate=500;
     uint32_t max_rate=linkBw/1000;
 
-    GymConnector gym_conn;
+    GymConnector gym_conn(gym_id, report_interval_ms);
     gym_conn.Step();
     auto cc_factory = std::make_shared<NetworkControllerProxyFactory>(gym_conn);
     auto se_factory = std::make_shared<NetworkStateEstimatorProxyFactory>(gym_conn);
@@ -220,7 +240,7 @@ int main(int argc, char *argv[]){
     ChangeBw change2(netDevice2);
     change2.Start();
 
-    Simulator::Stop (Seconds(simDuration));
+    Simulator::Stop (MilliSeconds(simDuration));
     Simulator::Run ();
     Simulator::Destroy();
 

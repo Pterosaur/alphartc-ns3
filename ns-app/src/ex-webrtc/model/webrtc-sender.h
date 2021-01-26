@@ -52,9 +52,9 @@ private:
   webrtc::Call* m_call{nullptr};
   uint32_t m_seq{1};
   AtomicLock m_rtpLock;
-  std::deque<rtc::CopyOnWriteBuffer> m_rtpQ;
+  std::deque<rtc::Buffer> m_rtpQ;
   AtomicLock m_rtcpLock;
-  std::deque<rtc::CopyOnWriteBuffer> m_rtcpQ;
+  std::deque<rtc::Buffer> m_rtcpQ;
   int64_t m_lastTraceTime{0};
 
   TraceBandwidth m_traceBw;

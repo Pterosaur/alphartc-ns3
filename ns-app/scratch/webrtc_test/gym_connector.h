@@ -15,12 +15,13 @@ class GymConnector {
   using BandwidthType = std::uint32_t;
 
   GymConnector(
-    const std::string &conn_id = "gym",
+    const std::string &gym_id = "gym",
+    std::uint64_t report_interval_ms = 60,
     BandwidthType init_bandwidth = 0);
 
   virtual ~GymConnector();
 
-  void Step();
+  void Step(std::uint64_t delay_ms = 0);
 
   void ReportStats();
 
@@ -43,7 +44,9 @@ class GymConnector {
   std::list<std::string> stats_;
   std::mutex mutex_stats_;
 
-  const std::string conn_id_;
+  const std::uint64_t report_interval_ms_;
+
+  const std::string gym_id_;
   zmq::context_t zmq_ctx_;
   zmq::socket_t zmq_sock_;
   bool zmq_wait_reply_;

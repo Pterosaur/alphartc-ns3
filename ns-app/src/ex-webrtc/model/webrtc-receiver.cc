@@ -63,9 +63,9 @@ bool WebrtcReceiver::SendRtp(const uint8_t* packet,
     sent_packet.info.packet_type = rtc::PacketType::kData;
     m_call->OnSentPacket(sent_packet);
     {
-        rtc::CopyOnWriteBuffer buffer(packet, length);
+        rtc::Buffer buffer(packet, length);
         LockScope ls(&m_rtpLock);
-        m_rtpQ.push_back(buffer);
+        m_rtpQ.push_back(std::move(buffer));
     }
     if (m_running) {
         Simulator::ScheduleWithContext(m_context, Time (0), MakeEvent(&WebrtcReceiver::DeliveryPacket, this));
@@ -77,9 +77,9 @@ bool WebrtcReceiver::SendRtp(const uint8_t* packet,
 bool WebrtcReceiver::SendRtcp(const uint8_t* packet, size_t length) {
     {
         NS_ASSERT(length<1500 && length>0);
-        rtc::CopyOnWriteBuffer buffer(packet, length);
+        rtc::Buffer buffer(packet, length);
         LockScope ls(&m_rtcpLock);
-        m_rtcpQ.push_back(buffer);
+        m_rtcpQ.push_back(std::move(buffer));
     }
     if (m_running)
     Simulator::ScheduleWithContext(m_context, Time (0), MakeEvent(&WebrtcReceiver::DeliveryPacket, this));
@@ -114,7 +114,7 @@ void WebrtcReceiver::DeliveryPacket() {
     {
         LockScope ls(&m_rtpLock);
         while(!m_rtpQ.empty()) {
-            rtc::CopyOnWriteBuffer buffer = m_rtpQ.front();
+            rtc::Buffer& buffer = m_rtpQ.front();
             Ptr<Packet> packet = Create<Packet>(buffer.data(), buffer.size());
             sendQ.push_back(packet);
             m_rtpQ.pop_front();
@@ -123,7 +123,7 @@ void WebrtcReceiver::DeliveryPacket() {
     {
         LockScope ls(&m_rtcpLock);
         while(!m_rtcpQ.empty()) {
-            rtc::CopyOnWriteBuffer buffer = m_rtcpQ.front();
+            rtc::Buffer& buffer = m_rtcpQ.front();
             Ptr<Packet> packet = Create<Packet>(buffer.data(), buffer.size());
             sendQ.push_back(packet);
             m_rtcpQ.pop_front();
