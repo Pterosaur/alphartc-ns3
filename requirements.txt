@@ -1,1 +1,3 @@
 pyzmq
+pytest
+pytest-timeout

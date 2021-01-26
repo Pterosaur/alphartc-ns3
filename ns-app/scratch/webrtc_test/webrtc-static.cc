@@ -255,8 +255,7 @@ int main(int argc, char *argv[]){
       for (auto &stat : gym_conn.ConsumeStats()) {
         std::cout << stat << std::endl;
       }
+      std::cout<<"Simulation ends."<<std::endl;
     }
-
-    std::cout<<"Simulation ends."<<std::endl;
     return 0;
 }

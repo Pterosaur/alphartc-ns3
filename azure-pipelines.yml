@@ -25,8 +25,8 @@ steps:
 - script: make gym
   displayName: 'Build gym'
 
-- script: mkdir -p traces && target/webrtc_test
-  displayName: 'Execute gym'
+- script: pytest tests
+  displayName: 'Run test'
 
 - publish: $(System.DefaultWorkingDirectory)/target
   continueOnError: true

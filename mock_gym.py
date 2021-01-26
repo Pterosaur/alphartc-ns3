@@ -4,7 +4,7 @@
 import gym_connect
 
 if __name__ == "__main__":
-    conn = gym_connect.GymConnector()
+    conn = gym_connect.GymConnector("test_gym")
     while True:
         stats = conn.step(1e6)
         if stats != None:
