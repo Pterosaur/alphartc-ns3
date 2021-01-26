@@ -117,8 +117,8 @@ static void InstallWebrtcApplication( Ptr<Node> sender,
                         WebrtcSessionManager *manager,
                         WebrtcTrace *trace=nullptr)
 {
-    Ptr<WebrtcSender> sendApp = CreateObject<WebrtcSender> (manager);
-    Ptr<WebrtcReceiver> recvApp = CreateObject<WebrtcReceiver>(manager);
+    static Ptr<WebrtcSender> sendApp = CreateObject<WebrtcSender> (manager);
+    static Ptr<WebrtcReceiver> recvApp = CreateObject<WebrtcReceiver>(manager);
     sender->AddApplication (sendApp);
     receiver->AddApplication (recvApp);
     sendApp->Bind(send_port);
@@ -159,6 +159,7 @@ int main(int argc, char *argv[]){
     std::string trace_path;
     std::uint64_t report_interval_ms = 60;
     std::uint64_t duration_time_ms = 0;
+    bool standalone_test_only = true;
 
     CommandLine cmd;
     cmd.AddValue("it", "instacne", instance);
@@ -167,6 +168,8 @@ int main(int argc, char *argv[]){
     cmd.AddValue("trace_path", "trace file path", trace_path);
     cmd.AddValue("report_interval_ms", "report interval (ms)", report_interval_ms);
     cmd.AddValue("duration_time_ms", "duration time (ms), the default is trace log duration", duration_time_ms);
+    cmd.AddValue("standalone_test_only", "standalone test only mode that don't need gym connect", standalone_test_only);
+
     cmd.Parse (argc, argv);
 
     if (trace_path.empty() && duration_time_ms == 0) {
@@ -202,7 +205,11 @@ int main(int argc, char *argv[]){
     uint32_t max_rate=linkBw/1000;
 
     GymConnector gym_conn(gym_id, report_interval_ms);
-    gym_conn.Step();
+    if (standalone_test_only) {
+      gym_conn.SetBandwidth(1e6);
+    } else {
+      gym_conn.Step();
+    }
     auto cc_factory = std::make_shared<NetworkControllerProxyFactory>(gym_conn);
     auto se_factory = std::make_shared<NetworkStateEstimatorProxyFactory>(gym_conn);
     // webrtc::GoogCcFactoryConfig config;
@@ -243,6 +250,12 @@ int main(int argc, char *argv[]){
     Simulator::Stop (MilliSeconds(simDuration));
     Simulator::Run ();
     Simulator::Destroy();
+
+    if (standalone_test_only) {
+      for (auto &stat : gym_conn.ConsumeStats()) {
+        std::cout << stat << std::endl;
+      }
+    }
 
     std::cout<<"Simulation ends."<<std::endl;
     return 0;
