@@ -29,17 +29,17 @@ def fill_reply(sock):
 
 @pytest.mark.timeout(1)
 def test_reply_and_request():
-    ctx, sock = create_reply("test_gym_connect")
+    ctx, sock = create_reply("test_gym")
     fill_reply(sock)
-    conn = gym_connect.GymConnector("test_gym_connect")
+    conn = gym_connect.GymConnector("test_gym")
     assert(conn.step(1000) is not None)
     assert(conn.step(1000) is None)
 
 
 @pytest.mark.timeout(1)
 def test_request_and_reply():
-    conn = gym_connect.GymConnector("test_gym_connect")
-    ctx, sock = create_reply("test_gym_connect")
+    conn = gym_connect.GymConnector("test_gym")
+    ctx, sock = create_reply("test_gym")
     fill_reply(sock)
     assert(conn.step(1000) is not None)
     assert(conn.step(1000) is None)

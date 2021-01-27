@@ -19,4 +19,7 @@ class Gym(object):
         self.gym_conn = gym_connect.GymConnector(self.gym_id)
 
     def step(self, bandwidth):
-        return self.gym_conn.step(bandwidth)
+        stats = self.gym_conn.step(bandwidth)
+        if stats != None:
+            return stats, True
+        return [], False
