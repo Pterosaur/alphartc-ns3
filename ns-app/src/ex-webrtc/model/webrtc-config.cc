@@ -38,7 +38,6 @@ WebrtcSessionManager::~WebrtcSessionManager() {
     if (m_running) {
         Stop();
     }
-    video_streams_.clear();
     if (sender_client_) {
         delete sender_client_;
         sender_client_ = nullptr;
@@ -85,7 +84,9 @@ void WebrtcSessionManager::Start() {
 }
 
 void WebrtcSessionManager::Stop() {
-    if (!m_running) { return ; }
+    if (!m_running) {
+        return ;
+    }
     m_running = false;
     for (auto& stream_pair : video_streams_) {
         stream_pair->send()->Stop();
@@ -93,6 +94,7 @@ void WebrtcSessionManager::Stop() {
     for (auto& stream_pair : video_streams_) {
         stream_pair->receive()->Stop();
     }
+    video_streams_.clear();
 }
 
 void WebrtcSessionManager::SetFrameHxW(uint32_t height,uint32_t width) {
