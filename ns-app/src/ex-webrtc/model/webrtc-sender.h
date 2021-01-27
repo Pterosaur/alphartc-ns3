@@ -20,6 +20,7 @@ public:
   ~WebrtcSender() override;
   InetSocketAddress GetLocalAddress();
   void Bind(uint16_t port);
+  uint16_t GetBindPort() const;
   void ConfigurePeer(Ipv4Address addr, uint16_t port);
 
   typedef Callback<void, uint32_t, uint32_t> TraceBandwidth;

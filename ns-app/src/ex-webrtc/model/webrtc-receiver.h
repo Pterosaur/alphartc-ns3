@@ -20,6 +20,7 @@ public:
   ~WebrtcReceiver() override;
   InetSocketAddress GetLocalAddress();
   void Bind(uint16_t port);
+  uint16_t GetBindPort() const;
   void ConfigurePeer(Ipv4Address addr, uint16_t port);
   void Construct(webrtc::Clock* sender_clock, webrtc::Call* sender_call) override{}
   bool SendRtp(const uint8_t* packet,

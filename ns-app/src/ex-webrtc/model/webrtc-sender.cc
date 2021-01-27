@@ -48,6 +48,10 @@ void WebrtcSender::Bind(uint16_t port){
     NotifyRouteChange();
 }
 
+uint16_t WebrtcSender::GetBindPort() const {
+    return m_bindPort;
+}
+
 void WebrtcSender::ConfigurePeer(Ipv4Address addr, uint16_t port){
     m_peerIp = addr;
     m_peerPort = port;

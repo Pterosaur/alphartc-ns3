@@ -49,6 +49,10 @@ void WebrtcReceiver::Bind(uint16_t port) {
     NotifyRouteChange();
 }
 
+uint16_t WebrtcReceiver::GetBindPort() const {
+    return m_bindPort;
+}
+
 bool WebrtcReceiver::SendRtp(const uint8_t* packet,
                size_t length,
                const webrtc::PacketOptions& options) {
@@ -81,8 +85,9 @@ bool WebrtcReceiver::SendRtcp(const uint8_t* packet, size_t length) {
         LockScope ls(&m_rtcpLock);
         m_rtcpQ.push_back(std::move(buffer));
     }
-    if (m_running)
+    if (m_running) {
     Simulator::ScheduleWithContext(m_context, Time (0), MakeEvent(&WebrtcReceiver::DeliveryPacket, this));
+    }
 
     return true;
 }

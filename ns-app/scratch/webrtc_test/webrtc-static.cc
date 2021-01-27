@@ -108,40 +108,31 @@ static NodeContainer BuildExampleTopo (uint64_t bps,
     return nodes;
 }
 
-static void InstallWebrtcApplication( Ptr<Node> sender,
-                        Ptr<Node> receiver,
-                        uint16_t send_port,
-                        uint16_t recv_port,
-                        float startTime,
-                        float stopTime,
-                        WebrtcSessionManager *manager,
-                        WebrtcTrace *trace=nullptr)
-{
-    static Ptr<WebrtcSender> sendApp = CreateObject<WebrtcSender> (manager);
-    static Ptr<WebrtcReceiver> recvApp = CreateObject<WebrtcReceiver>(manager);
-    sender->AddApplication (sendApp);
-    receiver->AddApplication (recvApp);
-    sendApp->Bind(send_port);
-    recvApp->Bind(recv_port);
-    Ptr<Ipv4> ipv4 = receiver->GetObject<Ipv4> ();
-    Ipv4Address addr = ipv4->GetAddress (1, 0).GetLocal ();
-    sendApp->ConfigurePeer(addr,recv_port);
-    ipv4=sender->GetObject<Ipv4> ();
-    addr=ipv4->GetAddress (1, 0).GetLocal ();
-    recvApp->ConfigurePeer(addr,send_port);
-    if (trace){
-        sendApp->SetBwTraceFuc(MakeCallback(&WebrtcTrace::OnBw, trace));
-        sendApp->SetRttTraceFuc(MakeCallback(&WebrtcTrace::OnRtt, trace));
-    }
-    sendApp->SetStartTime (Seconds (startTime));
-    sendApp->SetStopTime (Seconds (stopTime));
-    recvApp->SetStartTime (Seconds (startTime));
-    recvApp->SetStopTime (Seconds (stopTime));
+template<typename AppType>
+Ptr<AppType> CreateApp(
+  Ptr<Node> node,
+  uint16_t port,
+  uint64_t start_time_ms,
+  uint64_t stop_time_ms,
+  WebrtcSessionManager *manager) {
+  Ptr<AppType> app = CreateObject<AppType>(manager);
+  node->AddApplication(app);
+  app->Bind(port);
+  app->SetStartTime(ns3::MilliSeconds(start_time_ms));
+  app->SetStopTime(ns3::MilliSeconds(stop_time_ms));
+  return app;
 }
 
-static std::uint64_t simDuration = 5;
-static float appStart            = 0.1;
-static float appStop             = simDuration - 1;
+void ConnectApp(
+  Ptr<WebrtcSender> sender,
+  Ptr<WebrtcReceiver> receiver) {
+  auto sender_addr =
+    sender->GetNode()->GetObject<ns3::Ipv4>()->GetAddress(1, 0).GetLocal();
+  auto receiver_addr =
+    receiver->GetNode()->GetObject<ns3::Ipv4>()->GetAddress(1, 0).GetLocal();
+  sender->ConfigurePeer(receiver_addr, receiver->GetBindPort());
+  receiver->ConfigurePeer(sender_addr, sender->GetBindPort());
+}
 
 int main(int argc, char *argv[]){
     LogComponentEnable("WebrtcSender",LOG_LEVEL_ALL);
@@ -173,22 +164,16 @@ int main(int argc, char *argv[]){
     cmd.Parse (argc, argv);
 
     if (trace_path.empty() && duration_time_ms == 0) {
-      simDuration = 5;
+      duration_time_ms = 5000;
     } else if (duration_time_ms == 0) {
       // Set trace
+      // duration_time_ms = xxx
     } else {
-      simDuration = duration_time_ms;
     }
-
 
     int loss_integer=std::stoi(loss_str);
     double loss_rate=loss_integer*1.0/1000;
-    std::string webrtc_log_com;
-    if(loss_integer>0){
-        webrtc_log_com="_gccl"+std::to_string(loss_integer)+"_";
-    }else{
-        webrtc_log_com="_gcc_";
-    }
+
     bool enable_random_loss=false;
     if(loss_integer>0){
         Config::SetDefault ("ns3::RateErrorModel::ErrorRate", DoubleValue (loss_rate));
@@ -197,8 +182,6 @@ int main(int argc, char *argv[]){
         Config::SetDefault ("ns3::BurstErrorModel::BurstSize", StringValue ("ns3::UniformRandomVariable[Min=1|Max=3]"));
         enable_random_loss=true;
     }
-    uint16_t sendPort=5432;
-    uint16_t recvPort=5000;
 
     uint32_t min_rate=0;
     uint32_t start_rate=500;
@@ -212,10 +195,6 @@ int main(int argc, char *argv[]){
     }
     auto cc_factory = std::make_shared<NetworkControllerProxyFactory>(gym_conn);
     auto se_factory = std::make_shared<NetworkStateEstimatorProxyFactory>(gym_conn);
-    // webrtc::GoogCcFactoryConfig config;
-    // config.feedback_only = true;
-    // config.network_state_estimator_factory = std::make_unique<NetworkStateEstimatorProxyFactory>();
-    // auto cc_factory = std::make_shared<webrtc::GoogCcNetworkControllerFactory>(std::move(config));
     auto webrtc_manager = std::make_unique<WebrtcSessionManager>(cc_factory, se_factory);
     webrtc_manager->SetFrameHxW(720,1280);
     webrtc_manager->SetRate(min_rate,start_rate,max_rate);
@@ -223,31 +202,20 @@ int main(int argc, char *argv[]){
 
     NodeContainer nodes = BuildExampleTopo(linkBw, msDelay, msQDelay,enable_random_loss);
 
-    int test_pair=1;
-    std::string log=instance+webrtc_log_com+std::to_string(test_pair);
-    WebrtcTrace trace1;
-    trace1.Log(log,WebrtcTrace::E_WEBRTC_BW);
-    InstallWebrtcApplication(nodes.Get(0),
-                            nodes.Get(1),
-                            sendPort,
-                            recvPort,
-                            appStart,
-                            appStop,
-                            webrtc_manager.get(),
-                            &trace1);
-    sendPort++;
-    recvPort++;
-    test_pair++;
+    uint16_t sendPort=5432;
+    uint16_t recvPort=5000;
+    auto sender = CreateApp<WebrtcSender>(nodes.Get(0), sendPort, 0, duration_time_ms, webrtc_manager.get());
+    auto receiver = CreateApp<WebrtcReceiver>(nodes.Get(1), recvPort, 0, duration_time_ms, webrtc_manager.get());
+    ConnectApp(sender, receiver);
 
     Ptr<NetDevice> netDevice=nodes.Get(1)->GetDevice(0);
     ChangeBw change(netDevice);
     change.Start();
-
     Ptr<NetDevice> netDevice2=nodes.Get(0)->GetDevice(0);
     ChangeBw change2(netDevice2);
     change2.Start();
 
-    Simulator::Stop (MilliSeconds(simDuration));
+    Simulator::Stop (MilliSeconds(duration_time_ms + 1));
     Simulator::Run ();
     Simulator::Destroy();
 

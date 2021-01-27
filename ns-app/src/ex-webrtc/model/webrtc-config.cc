@@ -26,9 +26,6 @@ WebrtcSessionManager::WebrtcSessionManager(
     std::shared_ptr<webrtc::NetworkStateEstimatorFactory> se_factory)
 {
     video_stream_config_.stream.abs_send_time = true;
-    call_client_config_.transport.rates.min_rate = kInitialBitrate;
-    call_client_config_.transport.rates.max_rate = 5*kInitialBitrate;
-    call_client_config_.transport.rates.start_rate = kInitialBitrate;
     call_client_config_.transport.cc_factory = cc_factory.get();
     call_client_config_.transport.se_factory = se_factory.get();
     time_controller_.reset(new webrtc::MyRealTimeController());
@@ -103,9 +100,6 @@ void WebrtcSessionManager::SetFrameHxW(uint32_t height,uint32_t width) {
 }
 
 void WebrtcSessionManager::SetRate(uint32_t min_rate,uint32_t start_rate,uint32_t max_rate) {
-    call_client_config_.transport.rates.min_rate = webrtc::DataRate::KilobitsPerSec(min_rate);
-    call_client_config_.transport.rates.max_rate = webrtc::DataRate::KilobitsPerSec(max_rate);
-    call_client_config_.transport.rates.start_rate = webrtc::DataRate::KilobitsPerSec(start_rate);
 }
 
 void test_match_active() {
