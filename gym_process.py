@@ -10,7 +10,12 @@ __GYM_PROCESS_PATH__ = os.path.join(__ROOT_PATH__, "target", "webrtc_test")
 
 
 class GymProcess(object):
-    def __init__(self, gym_id: str = "gym", trace_path: str = "", report_interval_ms: int = 60, duration_time_ms: int = 0):
+    def __init__(
+        self,
+        gym_id: str = "gym",
+        trace_path: str = "",
+        report_interval_ms: int = 60,
+        duration_time_ms: int = 3000):
         process_args = [__GYM_PROCESS_PATH__, "--standalone_test_only=false"]
         process_args.append("--gym_id="+str(gym_id))
         if trace_path:

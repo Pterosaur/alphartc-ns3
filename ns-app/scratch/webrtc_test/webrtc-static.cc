@@ -1,6 +1,7 @@
 #include "gym_connector.h"
 #include "network_estimator_proxy_factory.h"
 #include "network_controller_proxy_factory.h"
+#include "trace_player.h"
 
 #include <iostream>
 #include <string>
@@ -163,14 +164,6 @@ int main(int argc, char *argv[]){
 
     cmd.Parse (argc, argv);
 
-    if (trace_path.empty() && duration_time_ms == 0) {
-      duration_time_ms = 5000;
-    } else if (duration_time_ms == 0) {
-      // Set trace
-      // duration_time_ms = xxx
-    } else {
-    }
-
     int loss_integer=std::stoi(loss_str);
     double loss_rate=loss_integer*1.0/1000;
 
@@ -202,18 +195,27 @@ int main(int argc, char *argv[]){
 
     NodeContainer nodes = BuildExampleTopo(linkBw, msDelay, msQDelay,enable_random_loss);
 
+    std::unique_ptr<TracePlayer> trace_player;
+    if (trace_path.empty() && duration_time_ms == 0) {
+      duration_time_ms = 5000;
+    } else if (duration_time_ms == 0) {
+      // Set trace
+      trace_player = std::make_unique<TracePlayer>(trace_path, nodes);
+      duration_time_ms = trace_player->GetTotalDuration();
+    }
+
     uint16_t sendPort=5432;
     uint16_t recvPort=5000;
     auto sender = CreateApp<WebrtcSender>(nodes.Get(0), sendPort, 0, duration_time_ms, webrtc_manager.get());
     auto receiver = CreateApp<WebrtcReceiver>(nodes.Get(1), recvPort, 0, duration_time_ms, webrtc_manager.get());
     ConnectApp(sender, receiver);
 
-    Ptr<NetDevice> netDevice=nodes.Get(1)->GetDevice(0);
-    ChangeBw change(netDevice);
-    change.Start();
-    Ptr<NetDevice> netDevice2=nodes.Get(0)->GetDevice(0);
-    ChangeBw change2(netDevice2);
-    change2.Start();
+    // Ptr<NetDevice> netDevice=nodes.Get(1)->GetDevice(0);
+    // ChangeBw change(netDevice);
+    // change.Start();
+    // Ptr<NetDevice> netDevice2=nodes.Get(0)->GetDevice(0);
+    // ChangeBw change2(netDevice2);
+    // change2.Start();
 
     Simulator::Stop (MilliSeconds(duration_time_ms + 1));
     Simulator::Run ();
