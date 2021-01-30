@@ -1,5 +1,5 @@
 #include "webrtc-config.h"
-#include "webrtc-util.h"
+#include "webrtc-emu-controller.h"
 
 #include "test/scenario/scenario_config.h"
 #include "test/scenario/video_frame_matcher.h"
@@ -28,7 +28,7 @@ WebrtcSessionManager::WebrtcSessionManager(
     video_stream_config_.stream.abs_send_time = true;
     call_client_config_.transport.cc_factory = cc_factory.get();
     call_client_config_.transport.se_factory = se_factory.get();
-    time_controller_.reset(new webrtc::MyRealTimeController());
+    time_controller_.reset(new webrtc::EmulationTimeController());
 }
 
 WebrtcSessionManager::~WebrtcSessionManager() {
