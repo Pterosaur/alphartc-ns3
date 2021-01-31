@@ -1,30 +1,29 @@
 #include <utility>
-
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
-
 #include "webrtc-clock.h"
 
 namespace ns3{
 
-namespace{
+class ExternalClock:public rtc::ClockInterface{
+public:
+    ExternalClock(){}
+    ~ExternalClock() override{}
+    int64_t TimeNanos() const override{
+        return Simulator::Now().GetNanoSeconds();
+    }
+};
 
-    static  bool webrtc_clock_init=false;
+static  bool webrtc_clock_init=false;
 
-    static SimulationWebrtcClock webrtc_clock;
+static ExternalClock external_clock;
 
-}
-
-int64_t SimulationWebrtcClock::TimeNanos() const{
-    return Simulator::Now().GetNanoSeconds();
-}
-
-void set_test_clock_webrtc(){
+void webrtc_register_clock(){
     if(!webrtc_clock_init){
-        rtc::SetClockForTesting(&webrtc_clock);
+        rtc::SetClockForTesting(&external_clock);
         webrtc_clock_init=true;
     }
-
+    
 }
 
 uint32_t webrtc_time32(){
@@ -41,6 +40,26 @@ int64_t webrtc_time_micros(){
 
 int64_t webrtc_time_nanos(){
     return rtc::TimeNanos();
+}
+
+}
+
+namespace webrtc{
+
+Timestamp WebrtcSimulationClock::CurrentTime() {
+  return Timestamp::Micros(rtc::TimeMicros());
+}
+
+NtpTime WebrtcSimulationClock::CurrentNtpTime() {
+  int64_t now_ms =rtc::TimeMillis();
+  uint32_t seconds = (now_ms / 1000) + kNtpJan1970;
+  uint32_t fractions =
+      static_cast<uint32_t>((now_ms % 1000) * kMagicNtpFractionalUnit / 1000);
+  return NtpTime(seconds, fractions);
+}
+
+int64_t WebrtcSimulationClock::CurrentNtpInMilliseconds() {
+  return TimeInMilliseconds() + 1000 * static_cast<int64_t>(kNtpJan1970);
 }
 
 }

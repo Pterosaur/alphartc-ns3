@@ -138,7 +138,7 @@ void ConnectApp(
 int main(int argc, char *argv[]){
     LogComponentEnable("WebrtcSender",LOG_LEVEL_ALL);
     LogComponentEnable("WebrtcReceiver",LOG_LEVEL_ALL);
-    GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
+    // GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
 
     uint64_t linkBw   = TOPO_DEFAULT_BW;
     uint32_t msDelay  = TOPO_DEFAULT_PDELAY;
@@ -163,6 +163,8 @@ int main(int argc, char *argv[]){
     cmd.AddValue("standalone_test_only", "standalone test only mode that don't need gym connect", standalone_test_only);
 
     cmd.Parse (argc, argv);
+
+    webrtc_register_clock();
 
     int loss_integer=std::stoi(loss_str);
     double loss_rate=loss_integer*1.0/1000;
