@@ -23,6 +23,8 @@ const float kDefaultPacingRate = 2.5f;
 }
 
 WebrtcSessionManager::WebrtcSessionManager(
+    std::uint64_t start_time_ms,
+    std::uint64_t stop_time_ms,
     std::shared_ptr<webrtc::NetworkControllerFactoryInterface> cc_factory,
     std::shared_ptr<webrtc::NetworkStateEstimatorFactory> se_factory)
 {
@@ -30,7 +32,10 @@ WebrtcSessionManager::WebrtcSessionManager(
     call_client_config_.transport.cc_factory = cc_factory.get();
     call_client_config_.transport.se_factory = se_factory.get();
     // time_controller_.reset(new webrtc::EmulationTimeController());
-    time_controller_.reset(new webrtc::SimulationTimeController(0, 50000000));
+    time_controller_.reset(
+        new webrtc::SimulationTimeController(
+            start_time_ms * 1e3,
+            stop_time_ms * 1e3));
 }
 
 WebrtcSessionManager::~WebrtcSessionManager() {

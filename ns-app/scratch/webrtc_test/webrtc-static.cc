@@ -139,6 +139,7 @@ int main(int argc, char *argv[]){
     LogComponentEnable("WebrtcSender",LOG_LEVEL_ALL);
     LogComponentEnable("WebrtcReceiver",LOG_LEVEL_ALL);
     // GlobalValue::Bind ("SimulatorImplementationType", StringValue ("ns3::RealtimeSimulatorImpl"));
+    webrtc_register_clock();
 
     uint64_t linkBw   = TOPO_DEFAULT_BW;
     uint32_t msDelay  = TOPO_DEFAULT_PDELAY;
@@ -164,8 +165,6 @@ int main(int argc, char *argv[]){
 
     cmd.Parse (argc, argv);
 
-    webrtc_register_clock();
-
     int loss_integer=std::stoi(loss_str);
     double loss_rate=loss_integer*1.0/1000;
 
@@ -182,19 +181,6 @@ int main(int argc, char *argv[]){
     uint32_t start_rate=500;
     uint32_t max_rate=linkBw/1000;
 
-    GymConnector gym_conn(gym_id, report_interval_ms);
-    if (standalone_test_only) {
-      gym_conn.SetBandwidth(1e6);
-    } else {
-      gym_conn.Step();
-    }
-    auto cc_factory = std::make_shared<NetworkControllerProxyFactory>(gym_conn);
-    auto se_factory = std::make_shared<NetworkStateEstimatorProxyFactory>(gym_conn);
-    auto webrtc_manager = std::make_unique<WebrtcSessionManager>(cc_factory, se_factory);
-    webrtc_manager->SetFrameHxW(720,1280);
-    webrtc_manager->SetRate(min_rate,start_rate,max_rate);
-    webrtc_manager->CreateClients();
-
     NodeContainer nodes = BuildExampleTopo(linkBw, msDelay, msQDelay,enable_random_loss);
 
     std::unique_ptr<TracePlayer> trace_player;
@@ -205,6 +191,20 @@ int main(int argc, char *argv[]){
       trace_player = std::make_unique<TracePlayer>(trace_path, nodes);
       duration_time_ms = trace_player->GetTotalDuration();
     }
+
+    GymConnector gym_conn(gym_id, report_interval_ms);
+    if (standalone_test_only) {
+      gym_conn.SetBandwidth(1e6);
+    } else {
+      gym_conn.Step();
+    }
+
+    auto cc_factory = std::make_shared<NetworkControllerProxyFactory>(gym_conn);
+    auto se_factory = std::make_shared<NetworkStateEstimatorProxyFactory>(gym_conn);
+    auto webrtc_manager = std::make_unique<WebrtcSessionManager>(0, duration_time_ms, cc_factory, se_factory);
+    webrtc_manager->SetFrameHxW(720,1280);
+    webrtc_manager->SetRate(min_rate,start_rate,max_rate);
+    webrtc_manager->CreateClients();
 
     uint16_t sendPort=5432;
     uint16_t recvPort=5000;
