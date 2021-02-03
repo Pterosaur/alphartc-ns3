@@ -1,7 +1,9 @@
-#include <utility>
+#include "webrtc-clock.h"
+
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
-#include "webrtc-clock.h"
+
+#include <utility>
 
 namespace ns3{
 
@@ -23,23 +25,6 @@ void webrtc_register_clock(){
         rtc::SetClockForTesting(&external_clock);
         webrtc_clock_init=true;
     }
-    
-}
-
-uint32_t webrtc_time32(){
-    return rtc::Time32();
-}
-
-int64_t webrtc_time_millis(){
-    return rtc::TimeMillis();
-}
-
-int64_t webrtc_time_micros(){
-    return rtc::TimeMicros();
-}
-
-int64_t webrtc_time_nanos(){
-    return rtc::TimeNanos();
 }
 
 }

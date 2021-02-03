@@ -37,11 +37,8 @@ def build(bld):
       'model/simulated-task-queue.cc',
       'model/simulated-thread.cc',
       'model/webrtc-config.cc',
-      'model/webrtclog.cc',
       'model/webrtc-receiver.cc',
       'model/webrtc-sender.cc',
-      'model/webrtc-tag.cc',
-      'model/webrtc-trace.cc',
       'model/webrtc-clock.cc',
       'model/webrtc-emu-controller.cc',
       'model/webrtc-simu-controller.cc',
@@ -81,11 +78,8 @@ def build(bld):
     headers.source = [
       'model/webrtc-config.h',
       'model/webrtc-defines.h',
-      'model/webrtclog.h',
       'model/webrtc-receiver.h',
       'model/webrtc-sender.h',
-      'model/webrtc-tag.h',
-      'model/webrtc-trace.h',
       'model/webrtc-clock.h',
       'model/webrtc-emu-controller.h',
     ]

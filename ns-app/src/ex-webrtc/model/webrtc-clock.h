@@ -11,14 +11,6 @@ namespace ns3{
 
 void webrtc_register_clock();
 
-uint32_t webrtc_time32();
-
-int64_t webrtc_time_millis();
-
-int64_t webrtc_time_micros();
-
-int64_t webrtc_time_nanos();
-
 }
 
 namespace webrtc{

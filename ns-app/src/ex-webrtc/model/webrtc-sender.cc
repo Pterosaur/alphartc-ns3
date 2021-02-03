@@ -4,7 +4,6 @@
 #include "rtc_base/net_helper.h"
 #include "rtc_base/network/sent_packet.h"
 #include "api/test/network_emulation/network_emulation_interfaces.h"
-#include "webrtc-tag.h"
 
 namespace ns3{
 

@@ -7,7 +7,6 @@
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/webrtc-config.h"
-#include "ns3/atomic-lock.h"
 #include "test/scenario/transport_base.h"
 #include "call/call.h"
 
