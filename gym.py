@@ -27,11 +27,11 @@ class Gym(object):
             duration_time_ms)
         self.gym_conn = gym_connect.GymConnector(self.gym_id)
 
-    def step(self, bandwidth):
-        stats = self.gym_conn.step(bandwidth)
+    def step(self, bandwidth_bps):
+        stats = self.gym_conn.step(bandwidth_bps)
         if stats != None:
-            return stats, True
-        return [], False
+            return stats, False
+        return [], True
 
     def __del__(self):
         if os.path.exists(gym_connect.__ZMQ_PATH__ + self.gym_id):

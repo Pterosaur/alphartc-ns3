@@ -10,8 +10,8 @@ def test_basic():
     g = gym.Gym("test_gym")
     g.reset()
     while True:
-        stats, flag = g.step(1000)
-        if flag:
+        stats, done = g.step(1000)
+        if not done:
             total_stats += stats
         else:
             break
@@ -28,8 +28,8 @@ def test_trace():
     g = gym.Gym("test_gym")
     g.reset(trace_path=trace_path, report_interval_ms=60, duration_time_ms=0)
     while True:
-        stats, flag = g.step(1000)
-        if flag:
+        stats, done = g.step(1000)
+        if  not done:
             total_stats += stats
         else:
             break
