@@ -79,7 +79,6 @@ def build(bld):
     headers = bld(features='ns3header')
     headers.module = 'ex-webrtc'
     headers.source = [
-      'model/atomic-lock.h',
       'model/webrtc-config.h',
       'model/webrtc-defines.h',
       'model/webrtclog.h',

@@ -68,7 +68,7 @@ bool WebrtcReceiver::SendRtp(const uint8_t* packet,
     m_call->OnSentPacket(sent_packet);
     {
         rtc::Buffer buffer(packet, length);
-        LockScope ls(&m_rtpLock);
+        std::unique_lock<std::mutex> lock(m_rtpMutex);
         m_rtpQ.push_back(std::move(buffer));
     }
     if (m_running) {
@@ -82,7 +82,7 @@ bool WebrtcReceiver::SendRtcp(const uint8_t* packet, size_t length) {
     {
         NS_ASSERT(length<1500 && length>0);
         rtc::Buffer buffer(packet, length);
-        LockScope ls(&m_rtcpLock);
+        std::unique_lock<std::mutex> lock(m_rtcpMutex);
         m_rtcpQ.push_back(std::move(buffer));
     }
     if (m_running) {
@@ -117,7 +117,7 @@ void WebrtcReceiver::NotifyRouteChange() {
 void WebrtcReceiver::DeliveryPacket() {
     std::deque<Ptr<Packet>> sendQ;
     {
-        LockScope ls(&m_rtpLock);
+        std::unique_lock<std::mutex> lock(m_rtpMutex);
         while(!m_rtpQ.empty()) {
             rtc::Buffer& buffer = m_rtpQ.front();
             Ptr<Packet> packet = Create<Packet>(buffer.data(), buffer.size());
@@ -126,7 +126,7 @@ void WebrtcReceiver::DeliveryPacket() {
         }
     }
     {
-        LockScope ls(&m_rtcpLock);
+        std::unique_lock<std::mutex> lock(m_rtcpMutex);
         while(!m_rtcpQ.empty()) {
             rtc::Buffer& buffer = m_rtcpQ.front();
             Ptr<Packet> packet = Create<Packet>(buffer.data(), buffer.size());
