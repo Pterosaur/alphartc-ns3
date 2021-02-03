@@ -16,6 +16,8 @@ def test_basic():
         else:
             break
     assert(total_stats)
+    for stats in total_stats:
+        assert(isinstance(stats, dict))
 
 def test_trace():
     total_stats = []
@@ -32,3 +34,5 @@ def test_trace():
         else:
             break
     assert(total_stats)
+    for stats in total_stats:
+        assert(isinstance(stats, dict))
