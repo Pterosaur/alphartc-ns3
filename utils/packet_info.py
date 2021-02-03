@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 class PacketInfo:
     def __init__(self):
         self.payload_type = None
